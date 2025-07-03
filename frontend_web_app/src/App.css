@@ -143,8 +143,12 @@ body, #toothless-app-root {
 }
 
 .scene-3d-container {
-  width: 420px;
-  height: 420px;
+  width: 100%;
+  max-width: 430px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-width: 220px;
+  min-height: 220px;
   margin: 0 auto;
   margin-top: 50px;
   border-radius: 24px;
@@ -154,6 +158,17 @@ body, #toothless-app-root {
   overflow: hidden;
   position: relative;
   z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.responsive-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  position: absolute;
+  left: 0; top: 0;
 }
 .toothless-shadow {
   width: 130px;
@@ -168,14 +183,25 @@ body, #toothless-app-root {
 
 @media (max-width: 600px) {
   .scene-3d-container {
-    width: 93vw;
-    height: 57vw;
-    min-width: 220px;
-    min-height: 130px;
-    margin-top: 20px;
+    width: 99vw;
+    max-width: none;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    min-height: 110px;
+    margin-top: 12px;
+    border-radius: 13px;
   }
   .main-content { padding-bottom: 20vh;}
 }
+
+@media (max-width: 370px) {
+  .scene-3d-container {
+    min-height: 70vw;
+    aspect-ratio: 1 / 1;
+  }
+}
+
 
 /* =============== CHAT SECTION =================== */
 .chat-section {

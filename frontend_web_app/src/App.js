@@ -1,28 +1,60 @@
 import React, { useRef, useState, useEffect, Suspense, useCallback } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF, Stage, Html } from '@react-three/drei';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { OrbitControls, Html } from '@react-three/drei';
+import { PerspectiveCamera } from '@react-three/drei';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as THREE from 'three';
 import axios from 'axios';
 import './App.css';
 
-// For demonstration, this should be replaced with the real Toothless .glb path
-const TOOTHLESS_GLTF_URL = process.env.PUBLIC_URL + '/toothless.glb';
+// PUBLIC_INTERFACE
+/**
+ * Fallback UI for model loading or error.
+ */
+function ModelFallbackUI({ error }) {
+  return (
+    <Html center>
+      <div className="loading-3d">
+        {error
+          ? (
+            <>
+              <span role="img" aria-label="Error">⚠️</span> Could not load Toothless model.<br />
+              Please check <code>public/toothless.glb</code>
+            </>
+          )
+          : <>Loading Toothless...</>
+        }
+      </div>
+    </Html>
+  );
+}
 
-// Gemini (Google AI) and ElevenLabs API Keys
-const GEMINI_API_KEY = ''; // Set instructions in UI
-const ELEVENLABS_API_KEY = ''; // Set instructions in UI
-
-// ================ Toothless 3D Model ====================
+// ================ Toothless 3D Model (with error boundary) ====================
 // PUBLIC_INTERFACE
 function ToothlessModel({ isSpeaking }) {
-  // Toothless .glb file - must be preloaded into public/
-  const { scene } = useGLTF(TOOTHLESS_GLTF_URL);
+  /**
+   * Always call hooks unconditionally at the top-level!
+   * Error handling is set up with loader callbacks and boundary fallback, not with try/catch.
+   */
+  const mesh = useRef();
+  const [loadError, setLoadError] = useState(null);
+  
+  // We capture loading/download errors with onError only.
+  const gltf = useLoader(
+    GLTFLoader,
+    process.env.PUBLIC_URL + '/toothless.glb',
+    (loader) => {
+      loader.manager.onError = (url) => {
+        setLoadError('Failed to load 3D model (check public/toothless.glb).');
+      };
+    }
+  );
 
   // Animate head/mouth by modifying mesh rotation if isSpeaking
-  // Quick demo: rotates whole head slightly up and down ("talks")
-  const mesh = useRef();
   useEffect(() => {
+    if (!mesh.current) return;
     let frame;
-    if (isSpeaking && mesh.current) {
+    if (isSpeaking) {
       let t = 0;
       const animate = () => {
         t += 0.08;
@@ -31,13 +63,29 @@ function ToothlessModel({ isSpeaking }) {
         frame = requestAnimationFrame(animate);
       };
       animate();
-    } else if (mesh.current) {
+    } else {
       mesh.current.rotation.x = 0;
       mesh.current.rotation.y = 0;
     }
     return () => frame && cancelAnimationFrame(frame);
   }, [isSpeaking]);
-  return <primitive object={scene} ref={mesh} scale={2.2} position={[0, -0.5, 0]} />;
+
+  if (loadError) {
+    return <ModelFallbackUI error={loadError} />;
+  }
+
+  /** Center and scale the model to fit the scene */
+  const model = gltf.scene.clone(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  // Target: width/height fits inside box of [-1.1,1.1]
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = 2.25 / maxDim;
+  model.position.set(-center.x * scale, -center.y * scale - 0.45, -center.z * scale); // Centered with slight Y offset
+  model.scale.setScalar(scale);
+
+  return <primitive object={model} ref={mesh} />;
 }
 
 // ===================== ChatBubble =========================
@@ -256,15 +304,37 @@ function App() {
       {/* 3D Section */}
       <main className="main-content">
         <div className="scene-3d-container">
-          <Canvas camera={{ position: [0, 0.6, 5], fov: 50 }}>
-            <ambientLight intensity={0.7} />
-            <directionalLight position={[0, 2, 3]} intensity={0.8} castShadow />
-            <Suspense fallback={<Html><div className="loading-3d">Loading Toothless...</div></Html>}>
-              <Stage intensity={0.6} environment="night" shadows>
-                <ToothlessModel isSpeaking={isSpeaking} />
-              </Stage>
+          <Canvas
+            frameloop="demand"
+            className="responsive-canvas"
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
+          >
+            {/* Camera & Controls */}
+            <PerspectiveCamera makeDefault fov={48} position={[0, 0.8, 5]} />
+            <ambientLight intensity={0.85} />
+            <directionalLight
+              position={[1.5, 7, 5]}
+              intensity={1.1}
+              castShadow
+              shadow-mapSize-width={1024}
+              shadow-mapSize-height={1024}
+            />
+            <directionalLight
+              position={[-2, 3.5, -2]}
+              intensity={0.7}
+              color="#ffecb0"
+            />
+            <Suspense fallback={<ModelFallbackUI />}>
+              <ToothlessModel isSpeaking={isSpeaking} />
             </Suspense>
-            <OrbitControls enablePan={false} minPolarAngle={0.6} maxPolarAngle={1.5} minDistance={2.8} maxDistance={7} />
+            <OrbitControls
+              enablePan={true}
+              enableZoom={true}
+              minPolarAngle={0.6}
+              maxPolarAngle={1.47}
+              minDistance={2.6}
+              maxDistance={7}
+            />
           </Canvas>
         </div>
         {/* Toothless face shadow */}
