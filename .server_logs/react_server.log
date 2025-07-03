@@ -6,37 +6,11 @@ Attempting to bind to HOST environment variable: 0.0.0.0
 If this was unintentional, check that you haven't mistakenly set it in your shell.
 Learn more here: https://cra.link/advanced-config
 
-(node:6247) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:8926) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:6247) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:8926) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
-Compiled with warnings.
-
-Failed to parse source map from '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map' file: Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map'
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in ./node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
-Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
-Failed to parse source map from '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map' file: Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map'
-
-webpack compiled with 1 warning
-Compiling...
-Compiled with warnings.
-
-Failed to parse source map from '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map' file: Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map'
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in ./node_modules/@mediapipe/tasks-vision/vision_bundle.mjs
-Module Warning (from ./node_modules/source-map-loader/dist/cjs.js):
-Failed to parse source map from '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map' file: Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map'
-
-webpack compiled with 1 warning
-Compiling...
 Compiled with warnings.
 
 Failed to parse source map from '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map' file: Error: ENOENT: no such file or directory, open '/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app/node_modules/@mediapipe/tasks-vision/vision_bundle_mjs.js.map'
