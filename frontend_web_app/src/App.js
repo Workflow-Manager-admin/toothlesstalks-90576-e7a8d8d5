@@ -157,28 +157,71 @@ function App() {
   };
 
   // ========== Chat Send & Gemini API ===========
+  // PUBLIC_INTERFACE
+  /**
+   * Sends a user message to Gemini API with correct endpoint/body,
+   * receives text reply, then passes it to ElevenLabs for TTS.
+   * @param {string} text - User's transcribed or typed message
+   */
   async function sendMessage(text) {
     if (!geminiKey) return alert('Please enter your Gemini API key.');
     setLoading(true);
     setMessages((prev) => [...prev, { from: 'user', message: text }]);
     setInput('');
     try {
-      // Gemini Chat API (Google)
+      // Google Gemini API v1 (official, not deprecated) – POST with correct endpoint and body
       // See: https://ai.google.dev/gemini-api/docs/api-rest
-
-      const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + geminiKey;
-      const res = await axios.post(url, {
-        contents: [{ role: "user", parts: [{ text }] }]
+      
+      const url =
+        'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=' +
+        geminiKey;
+      const reqBody = {
+        contents: [
+          {
+            parts: [
+              { text }
+            ]
+          }
+        ]
+      };
+      const res = await axios.post(url, reqBody, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-      // Gemini's message
-      const ai = res.data?.candidates?.[0]?.content?.parts?.[0]?.text
-        || "Sorry, I'm not sure what to say.";
+
+      // Parse Gemini response per v1 spec
+      let ai =
+        res?.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Sorry, I'm not sure what to say.";
+
+      // Defensive fallback in case of changing response structure
+      if (!ai) {
+        if (
+          Array.isArray(res?.data?.candidates) &&
+          res.data.candidates[0]?.content &&
+          typeof res.data.candidates[0].content === 'object'
+        ) {
+          // Try to dig into possible nested structure
+          const parts = res.data.candidates[0].content.parts;
+          if (Array.isArray(parts) && parts[0]?.text) {
+            ai = parts[0].text;
+          }
+        }
+      }
 
       setMessages((prev) => [...prev, { from: 'toothless', message: ai }]);
+      // Chain response to ElevenLabs for TTS
       speak(ai);
 
     } catch (e) {
-      setMessages((prev) => [...prev, { from: 'toothless', message: "Error: " + (e?.response?.data?.error?.message || e.message || 'Unknown error') }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          from: 'toothless',
+          message: 'Error: ' + (e?.response?.data?.error?.message || e.message || 'Unknown error'),
+        },
+      ]);
     } finally {
       setLoading(false);
     }
