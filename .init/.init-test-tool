@@ -1,0 +1,4 @@
+{
+    "command": "npm run test",
+    "working_directory": "/home/kavia/workspace/code-generation/toothlesstalks-90576-e7a8d8d5/frontend_web_app"
+}
